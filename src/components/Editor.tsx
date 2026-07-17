@@ -52,7 +52,7 @@ function Editor({
 
         if (!exCommandsRegistered) {
             exCommandsRegistered = true;
-            const Vim = VimMode.Vim;
+            const Vim = (VimMode as unknown as { Vim: any }).Vim;
 
             Vim.defineEx("write", "w", () => handlersRef.current.onSave());
             Vim.defineEx("quit", "q", () => handlersRef.current.onCloseTab());
