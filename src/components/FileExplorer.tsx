@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { listDir } from "../lib/fs";
+import { listDirRecursive } from "../lib/fs";
 import type { FsEntry } from "../types";
 import { ChevronRight, ChevronDown, FileText, Folder, FolderOpen } from "lucide-react";
 
@@ -18,20 +18,13 @@ function Node({
     onOpenFile: (path: string) => void;
 }) {
     const [expanded, setExpanded] = useState(false);
-    const [children, setChildren] = useState<FsEntry[] | null>(null);
 
-    const handleClick = async () => {
+    const handleClick = () => {
         if (!entry.isDirectory) {
             onOpenFile(entry.path);
             return;
         }
-
-        if (!expanded && children === null) {
-            const loaded = await listDir(entry.path);
-            setChildren(loaded);
-        }
-
-        setExpanded(!expanded);
+        setExpanded((prev) => !prev);
     };
 
     return (
@@ -43,12 +36,12 @@ function Node({
             >
                 {entry.isDirectory ? (
                     <>
-                        {expanded ?
-                            <ChevronDown size={14} /> : <ChevronRight size={14} />
-                        }
-
-                        {expanded ?
-                        <FolderOpen size={14} className="text-violet-400" /> : <Folder size={14} className="text-violet-400" />}
+                        {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                        {expanded ? (
+                            <FolderOpen size={14} className="text-violet-400" />
+                        ) : (
+                            <Folder size={14} className="text-violet-400" />
+                        )}
                     </>
                 ) : (
                     <>
@@ -59,22 +52,21 @@ function Node({
                 <span className="truncate">{entry.name}</span>
             </div>
 
-            {entry.isDirectory && expanded && children?.map((child) => (
-                <Node key={child.path} entry={child} depth={depth + 1} onOpenFile={onOpenFile} />
-            ))}
+            {entry.isDirectory &&
+                expanded &&
+                entry.children?.map((child) => (
+                    <Node key={child.path} entry={child} depth={depth + 1} onOpenFile={onOpenFile} />
+                ))}
         </div>
     );
 }
 
-function FileExplorer({
-    rootPath,
-    onOpenFile
-}: FileExplorerProps) {
+function FileExplorer({ rootPath, onOpenFile }: FileExplorerProps) {
     const [loadedFor, setLoadedFor] = useState<string | null>(null);
     const [rootEntries, setRootEntries] = useState<FsEntry[] | null>(null);
 
     if (rootPath && rootPath !== loadedFor) {
-        listDir(rootPath).then((entries) => {
+        listDirRecursive(rootPath).then((entries) => {
             setRootEntries(entries);
             setLoadedFor(rootPath);
         });

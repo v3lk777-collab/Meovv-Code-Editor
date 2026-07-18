@@ -26,6 +26,32 @@ export async function listDir(path: string): Promise<FsEntry[]> {
         });
 }
 
+export async function listDirRecursive(path: string): Promise<FsEntry[]> {
+    const entries = await readDir(path);
+
+    const children = await Promise.all(
+        entries.map(async (e) => {
+            const entryPath = `${path}/${e.name}`;
+            const node: FsEntry = {
+                name: e.name ?? "",
+                path: entryPath,
+                isDirectory: e.isDirectory,
+            };
+
+            if (e.isDirectory) {
+                node.children = await listDirRecursive(entryPath);
+            }
+
+            return node;
+        })
+    );
+
+    return children.sort((a, b) => {
+        if (a.isDirectory !== b.isDirectory) return a.isDirectory ? -1 : 1;
+        return a.name.localeCompare(b.name);
+    });
+}
+
 export async function readFile(path: string): Promise<string> {
     return await readTextFile(path);
 }
