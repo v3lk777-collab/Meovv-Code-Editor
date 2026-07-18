@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { ChevronRight, ChevronDown, FileText, Folder, FolderOpen } from "lucide-react";
 import { listDir } from "../lib/fs";
 import type { FsEntry } from "../types";
+import { ChevronRight, ChevronDown, FileText, Folder, FolderOpen } from "lucide-react";
 
 interface FileExplorerProps {
     rootPath: string | null;
@@ -25,10 +25,12 @@ function Node({
             onOpenFile(entry.path);
             return;
         }
+
         if (!expanded && children === null) {
             const loaded = await listDir(entry.path);
             setChildren(loaded);
         }
+
         setExpanded(!expanded);
     };
 
@@ -41,8 +43,12 @@ function Node({
             >
                 {entry.isDirectory ? (
                     <>
-                        {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                        {expanded ? <FolderOpen size={14} className="text-violet-400" /> : <Folder size={14} className="text-violet-400" />}
+                        {expanded ?
+                            <ChevronDown size={14} /> : <ChevronRight size={14} />
+                        }
+
+                        {expanded ?
+                        <FolderOpen size={14} className="text-violet-400" /> : <Folder size={14} className="text-violet-400" />}
                     </>
                 ) : (
                     <>
@@ -52,6 +58,7 @@ function Node({
                 )}
                 <span className="truncate">{entry.name}</span>
             </div>
+
             {entry.isDirectory && expanded && children?.map((child) => (
                 <Node key={child.path} entry={child} depth={depth + 1} onOpenFile={onOpenFile} />
             ))}
@@ -59,9 +66,12 @@ function Node({
     );
 }
 
-function FileExplorer({ rootPath, onOpenFile }: FileExplorerProps) {
-    const [rootEntries, setRootEntries] = useState<FsEntry[] | null>(null);
+function FileExplorer({
+    rootPath,
+    onOpenFile
+}: FileExplorerProps) {
     const [loadedFor, setLoadedFor] = useState<string | null>(null);
+    const [rootEntries, setRootEntries] = useState<FsEntry[] | null>(null);
 
     if (rootPath && rootPath !== loadedFor) {
         listDir(rootPath).then((entries) => {
