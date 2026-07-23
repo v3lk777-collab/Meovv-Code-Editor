@@ -8,11 +8,18 @@ interface TabsProps {
     onClose: (id: string) => void;
 }
 
-function Tabs({ tabs, activeId, onSelect, onClose }: TabsProps) {
-    if (tabs.length === 0) return null;
+function Tabs({
+    tabs,
+    activeId,
+    onSelect,
+    onClose
+}: TabsProps) {
+    if (tabs.length === 0) {
+        return null;
+    }
 
     return (
-        <div className="h-9 w-full bg-black border-b border-zinc-800 flex items-stretch overflow-x-auto">
+        <div className="h-9 w-full bg-black border-b border-zinc-800 flex items-stretch overflow-x-auto scrollbar">
             {tabs.map((tab) => {
                 const active = tab.id === activeId;
                 return (
@@ -20,20 +27,21 @@ function Tabs({ tabs, activeId, onSelect, onClose }: TabsProps) {
                         key={tab.id}
                         onClick={() => onSelect(tab.id)}
                         className={`group flex items-center gap-2 px-3 border-r border-zinc-800 cursor-pointer text-xs whitespace-nowrap ${
-                            active
-                                ? "bg-zinc-900 text-zinc-100"
-                                : "bg-black text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-300"
+                            active ? "bg-zinc-900 text-zinc-100" : "bg-black text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-300"
                         }`}
                     >
-                        <span className={active ? "border-t-2 border-violet-500 -mt-[9px] pt-[9px]" : ""}>
+                        <span className={active ? "border-t-2 border-violet-500 -mt-2.25 pt-2.25" : ""}>
                             {tab.name}
                         </span>
-                        {tab.isDirty && <span className="w-1.5 h-1.5 rounded-full bg-violet-500" />}
+
+                        {tab.isDirty && <span className="w-1.5 h-1.5 rounded-full bg-violet-500"/>}
+
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onClose(tab.id);
                             }}
+
                             className="opacity-0 group-hover:opacity-100 hover:text-red-400"
                         >
                             <X size={12} />

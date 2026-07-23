@@ -34,7 +34,7 @@ function Editor({
     }, []);
 
     const handleMount: OnMount = (editor, monaco) => {
-        monaco.editor.defineTheme("mello-black", {
+        monaco.editor.defineTheme("mello", {
             base: "vs-dark",
             inherit: true,
             rules: [
@@ -154,7 +154,7 @@ function Editor({
                 "editorWidget.border": "#27272a",
             },
         });
-        monaco.editor.setTheme("mello-black");
+        monaco.editor.setTheme("mello");
 
         if (!exCommandsRegistered) {
             exCommandsRegistered = true;
@@ -182,16 +182,16 @@ function Editor({
         <div className="h-full w-full bg-black overflow-hidden flex flex-col">
             <div className="flex-1 min-h-0">
                 <MonacoEditor
-                    theme="mello-black"
+                    theme="mello"
                     height="100%"
                     language={language}
                     value={code}
                     onChange={(value) => onChangeCode(value || "")}
                     onMount={handleMount}
                     options={{
-                        fontSize: 14,
+                        fontSize: 9,
                         fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                        minimap: { enabled: false },
+                        minimap: { enabled: true },
                         cursorBlinking: "blink",
                         cursorStyle: "block",
                         smoothScrolling: true,

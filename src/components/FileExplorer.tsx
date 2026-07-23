@@ -81,7 +81,7 @@ function FileExplorer({ rootPath, onOpenFile }: FileExplorerProps) {
     }
 
     return (
-        <div className="h-full w-full bg-black overflow-y-auto py-2">
+        <div className="h-full w-full bg-black overflow-y-auto py-2 scrollbar">
             {rootEntries?.map((entry) => (
                 <Node key={entry.path} entry={entry} depth={0} onOpenFile={onOpenFile} />
             ))}

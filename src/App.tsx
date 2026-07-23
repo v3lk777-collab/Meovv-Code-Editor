@@ -6,6 +6,7 @@ import FileExplorer from "./components/FileExplorer";
 import Tabs from "./components/Tabs";
 import { pickFolder, readFile, writeFile, languageFromPath } from "./lib/fs";
 import type { FileTab } from "./types";
+import { MousePointerClick } from "lucide-react";
 
 function App() {
     const [rootPath, setRootPath] = useState<string | null>(null);
@@ -20,8 +21,10 @@ function App() {
             setActiveId(existing.id);
             return;
         }
+
         const content = await readFile(path);
         const id = crypto.randomUUID();
+
         const newTab: FileTab = {
             id,
             path,
@@ -58,7 +61,11 @@ function App() {
 
     const closeTab = (id?: string) => {
         const targetId = id ?? activeId;
-        if (!targetId) return;
+
+        if (!targetId) {
+            return;
+        }
+
         setTabs((prev) => {
             const filtered = prev.filter((t) => t.id !== targetId);
             if (targetId === activeId) {
@@ -70,39 +77,48 @@ function App() {
 
     const openFolder = async () => {
         const folder = await pickFolder();
-        if (folder) setRootPath(folder);
+
+        if (folder) {
+            setRootPath(folder);
+        }
     };
 
     return (
         <main className="h-screen w-screen flex flex-col bg-black text-neutral-200 overflow-hidden">
-            <Titlebar />
+            <Titlebar
+                openFolder={openFolder}
+            />
             
             <div className="flex flex-1 min-h-0">
                 <div className="w-56 border-r border-zinc-800 flex flex-col">
-                  <button
-                    onClick={openFolder}
-                    className="text-xs text-zinc-400 hover:text-zinc-200 px-3 py-2 text-left border-b border-zinc-800"
-                  >
-                    Open Folder
-                  </button>
-                  <FileExplorer rootPath={rootPath} onOpenFile={openFile} />
+                    <FileExplorer
+                        rootPath={rootPath}
+                        onOpenFile={openFile}
+                    />
                 </div>
 
                 <div className="flex-1 min-w-0 flex flex-col">
-                    <Tabs tabs={tabs} activeId={activeId} onSelect={setActiveId} onClose={closeTab} />
+                    <Tabs
+                        tabs={tabs}
+                        activeId={activeId}
+                        onSelect={setActiveId}
+                        onClose={closeTab}
+                    />
+
                     {activeTab ? (
                         <Editor
-                          key={activeTab.id}
-                          code={activeTab.content}
-                          language={activeTab.language}
-                          onChangeCode={changeCode}
-                          onSave={saveActive}
-                          onCloseTab={() => closeTab(activeTab.id)}
-                          onOpenFile={openFile}
-                          onQuitAll={() => setTabs([])}
+                            key={activeTab.id}
+                            code={activeTab.content}
+                            language={activeTab.language}
+                            onChangeCode={changeCode}
+                            onSave={saveActive}
+                            onCloseTab={() => closeTab(activeTab.id)}
+                            onOpenFile={openFile}
+                            onQuitAll={() => setTabs([])}
                         />
                     ) : (
-                      <div className="flex-1 flex items-center justify-center text-zinc-600 text-sm">
+                      <div className="flex-1 flex flex-col items-center justify-center gap-2 text-zinc-600 text-sm">
+                        <MousePointerClick size={128}/>
                         Open file
                       </div>
                     )}
